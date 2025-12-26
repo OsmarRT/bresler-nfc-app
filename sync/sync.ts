@@ -10,11 +10,12 @@ export const syncUsers = async () => {
 
   const names = users.map((u: User) => u.name)
 
-  await fetch('http://localhost:5432/api/users/sync', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(names)
-  })
+  await fetch(process.env.EXPO_PUBLIC_SYNC_URL!, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(names),
+});
+
 
   await database.write(async () => {
     for (const u of users) {
