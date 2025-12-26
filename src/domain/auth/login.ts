@@ -1,6 +1,7 @@
 import type { Session } from "./types";
 
-const API_BASE_URL = "http://192.168.1.89:3001";//api nestjs
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL!;
+
 
 export async function loginUseCase(input: { email: string; password: string }): Promise<Session> {
   const res = await fetch(`${API_BASE_URL}/auth/login`, {
