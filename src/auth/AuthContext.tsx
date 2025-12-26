@@ -7,13 +7,17 @@ import type { Session } from "../domain/auth/types";
 type AuthContextValue = {
   session: Session | null;
   isReady: boolean;
-  signIn: (email: string, password: string) => Promise<Session>;
+  signIn: (rut: string, password: string) => Promise<Session>;
   signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 const SESSION_KEY = "session.v1";
+
+function normalizeRut(input: string) {
+  return input.trim().replace(/\./g, "").toUpperCase();
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -28,8 +32,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
-  async function signIn(email: string, password: string) {
-    const s = await loginUseCase({ email, password });
+  async function signIn(rut: string, password: string) {
+    const rutNorm = normalizeRut(rut);
+    const s = await loginUseCase({ rut: rutNorm, password }); // CAMBIO
     setSession(s);
     await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(s));
     return s;

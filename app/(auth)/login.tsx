@@ -3,11 +3,15 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useAuth } from "../../src/auth/useAuth";
 
+function normalizeRut(input: string) {
+  return input.trim().replace(/\./g, "").toUpperCase();
+}
+
 export default function LoginScreen() {
   const router = useRouter();
   const { signIn } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [rut, setRut] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -16,7 +20,7 @@ export default function LoginScreen() {
     setError(null);
     setLoading(true);
     try {
-      const session = await signIn(email.trim().toLowerCase(), password);
+      const session = await signIn(normalizeRut(rut), password);
 
       // Redirección por rol
       if (session.user.role === "admin") {
@@ -37,11 +41,11 @@ export default function LoginScreen() {
 
       <TextInput
         style={styles.input}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        placeholder="Correo"
-        value={email}
-        onChangeText={setEmail}
+        autoCapitalize="characters"
+        keyboardType="default"
+        placeholder="RUT (ej: 12345678-5)"
+        value={rut}
+        onChangeText={setRut}
       />
 
       <TextInput
@@ -55,9 +59,7 @@ export default function LoginScreen() {
       {!!error && <Text style={styles.error}>{error}</Text>}
 
       <Pressable style={styles.button} onPress={onLogin} disabled={loading}>
-        <Text style={styles.buttonText}>
-          {loading ? "Ingresando..." : "Entrar"}
-        </Text>
+        <Text style={styles.buttonText}>{loading ? "Ingresando..." : "Entrar"}</Text>
       </Pressable>
 
       <Text style={styles.hint}>
